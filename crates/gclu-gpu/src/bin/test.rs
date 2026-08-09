@@ -1,7 +1,7 @@
-fn main(){
+fn main() {
     match gclu_gpu::list_gpus() {
         Ok(gpus) => {
-            if gpus.is_empty(){
+            if gpus.is_empty() {
                 println!("No GPUs found. :(");
             }
             for gpu in gpus {

@@ -2,6 +2,7 @@
 // gpu discovery and stats
 
 use nvml_wrapper::Nvml;
+use nvml_wrapper::enums::device::UsedGpuMemory;
 
 pub struct GpuInfo {
     pub index: u32,
@@ -9,6 +10,7 @@ pub struct GpuInfo {
     pub memory_used_mb: u64,
     pub memory_total_mb: u64,
     pub utilization_pct: u32,
+    pub processes: Vec<GpuProcess>,
 }
 
 pub fn list_gpus() -> Result<Vec<GpuInfo>, Box<dyn std::error::Error>> {
@@ -21,12 +23,25 @@ pub fn list_gpus() -> Result<Vec<GpuInfo>, Box<dyn std::error::Error>> {
         let mem = device.memory_info()?;
         let util = device.utilization_rates()?;
 
+        let processes = device
+            .running_compute_processes()?
+            .into_iter()
+            .map(|p| GpuProcess {
+                pid: p.pid,
+                used_memory_mb: match p.used_gpu_memory {
+                    UsedGpuMemory::Used(bytes) => Some(bytes / 1024 / 1024),
+                    UsedGpuMemory::Unavailable => None,
+                },
+            })
+            .collect();
+
         gpus.push(GpuInfo {
             index: i,
             name: device.name()?,
             memory_used_mb: mem.used / 1024 / 1024,
             memory_total_mb: mem.total / 1024 / 1024,
             utilization_pct: util.gpu,
+            processes,
         });
     }
 
