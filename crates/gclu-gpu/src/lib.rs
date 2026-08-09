@@ -4,6 +4,11 @@
 use nvml_wrapper::Nvml;
 use nvml_wrapper::enums::device::UsedGpuMemory;
 
+pub struct GpuProcess {
+    pub pid: u32,
+    pub used_memory_mb: Option<u64>,
+}
+
 pub struct GpuInfo {
     pub index: u32,
     pub name: String,
