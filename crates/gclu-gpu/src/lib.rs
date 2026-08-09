@@ -10,6 +10,7 @@ pub struct GpuProcess {
     pub pid: u32,
     pub used_memory_mb: Option<u64>,
     pub username: Option<String>,
+    pub cmdline: Option<String>,
 }
 
 pub struct GpuInfo {
@@ -26,6 +27,12 @@ pub fn get_username_for_pid(pid: u32) -> Option<String> {
     let metadata = fs::metadata(path).ok()?;
     let uid = metadata.uid();
     users::get_user_by_uid(uid).map(|u| u.name().to_string_lossy().into_owned())
+}
+
+pub fn get_cmdline_for_pid(pid: u32) -> Option<String> {
+    let raw = fs::read(format!("/proc/{}/cmdline", pid)).ok()?;
+    let cmdline = String::from_utf8_lossy(&raw).replace('\0', " ").trim().to_string();
+    if cmdline.is_empty() { None } else { Some(cmdline) }
 }
 
 pub fn list_gpus() -> Result<Vec<GpuInfo>, Box<dyn std::error::Error>> {
@@ -48,6 +55,7 @@ pub fn list_gpus() -> Result<Vec<GpuInfo>, Box<dyn std::error::Error>> {
                     UsedGpuMemory::Unavailable => None,
                 },
                 username: get_username_for_pid(p.pid),
+                cmdline: get_cmdline_for_pid(p.pid),
             })
             .collect();
 
