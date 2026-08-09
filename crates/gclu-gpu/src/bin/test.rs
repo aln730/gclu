@@ -18,9 +18,10 @@ fn main() {
                     println!("no processes!");
                 } else {
                     for p in &gpu.processes {
+                        let user = p.username.as_deref().unwrap_or("unknown");
                         match p.used_memory_mb {
-                            Some(mb) => println!("PID {} is using {} MB", p.pid, mb),
-                            None => println!("PID {} USED IT ALLL", p.pid),
+                            Some(mb) => println!("{} (PID {}) is using {} MB", user, p.pid, mb),
+                            None => println!("{} ({}) USED IT ALLL", user, p.pid),
                         }
                     }
                 }
