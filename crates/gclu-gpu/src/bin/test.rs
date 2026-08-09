@@ -21,7 +21,7 @@ fn main() {
                         let user = p.username.as_deref().unwrap_or("unknown");
                         let cmd = p.cmdline.as_deref().unwrap_or("unknown");
                         match p.used_memory_mb {
-                            Some(mb) => println!("{} (PID {}) is using {} MB for {}", user, p.pid, mb, cmd),
+                            Some(mb) => println!("{} (PID {}) is using {} MiB for {}", user, p.pid, mb, cmd),
                             None => println!("{} ({}) USED IT ALLL FOR {}", user, p.pid, cmd),
                         }
                     }
