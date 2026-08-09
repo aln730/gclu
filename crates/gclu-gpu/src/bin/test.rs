@@ -13,6 +13,17 @@ fn main() {
                     gpu.memory_total_mb,
                     gpu.utilization_pct,
                 );
+
+                if gpu.processes.is_empty() {
+                    println!("no processes!");
+                } else {
+                    for p in &gpu.processes {
+                        match p.used_memory_mb {
+                            Some(mb) => println!("PID {} is using {} MB", p.pid, mb),
+                            None => println!("PID {} USED IT ALLL", p.pid),
+                        }
+                    }
+                }
             }
         }
         Err(e) => eprintln!("Error initialiing NVML: {e}"),
