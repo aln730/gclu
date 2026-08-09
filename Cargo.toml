@@ -1,0 +1,6 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/gclu-gpu",
+    "crates/gclu-core",
+]
